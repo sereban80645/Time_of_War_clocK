@@ -4,13 +4,13 @@ import android.content.Context
 import androidx.wear.tiles.TileService
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
-import androidx.wear.tiles.TimelineBuilders
-import androidx.wear.tiles.LayoutElementBuilders
-import androidx.wear.tiles.ModifiersBuilders
-import androidx.wear.tiles.ActionBuilders
-import androidx.wear.tiles.DimensionBuilders
-import androidx.wear.tiles.ColorBuilders
-import androidx.wear.tiles.ResourceBuilders
+import androidx.wear.protolayout.TimelineBuilders
+import androidx.wear.protolayout.LayoutElementBuilders
+import androidx.wear.protolayout.ModifiersBuilders
+import androidx.wear.protolayout.ActionBuilders
+import androidx.wear.protolayout.DimensionBuilders
+import androidx.wear.protolayout.ColorBuilders
+import androidx.wear.protolayout.ResourceBuilders
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import java.time.LocalDateTime
@@ -27,10 +27,16 @@ class TimeOfWarTileService : TileService() {
         val now = LocalDateTime.now()
         val lines = mutableListOf<String>()
         if (prefs.getBoolean("show2022", true)) {
-            lines += "24.02.2022 · " + counterText(LocalDateTime.of(2022, 2, 24, 2, 40), now, prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true))
+            lines += "24.02.2022 · " + counterText(
+                LocalDateTime.of(2022, 2, 24, 2, 40), now,
+                prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true)
+            )
         }
         if (prefs.getBoolean("show2014", false)) {
-            lines += "20.02.2014 · " + counterText(LocalDateTime.of(2014, 2, 20, 12, 0), now, prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true))
+            lines += "20.02.2014 · " + counterText(
+                LocalDateTime.of(2014, 2, 20, 12, 0), now,
+                prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true)
+            )
         }
         if (lines.isEmpty()) lines += "Увімкніть подію в налаштуваннях"
 
@@ -38,7 +44,7 @@ class TimeOfWarTileService : TileService() {
             .setAndroidActivity(
                 ActionBuilders.AndroidActivity.Builder()
                     .setPackageName(packageName)
-                    .setClassName(packageName, MainActivity::class.java.name)
+                    .setClassName(MainActivity::class.java.name)
                     .build()
             ).build()
 
@@ -46,9 +52,7 @@ class TimeOfWarTileService : TileService() {
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
             .addContent(textElement("TIME OF WAR", 12f, 0xFFBDBDBD.toInt()))
             .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(4f)).build())
-        lines.forEach { line ->
-            column.addContent(textElement(line, 14f, 0xFFFFFFFF.toInt()))
-        }
+        lines.forEach { line -> column.addContent(textElement(line, 14f, 0xFFFFFFFF.toInt())) }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(5f)).build())
         column.addContent(textElement("Торкніться для налаштувань", 10f, 0xFF80CBC4.toInt()))
 
@@ -69,9 +73,7 @@ class TimeOfWarTileService : TileService() {
             .addContent(column.build())
             .build()
 
-        val layout = LayoutElementBuilders.Layout.Builder()
-            .setRoot(root)
-            .build()
+        val layout = LayoutElementBuilders.Layout.Builder().setRoot(root).build()
         val timeline = TimelineBuilders.Timeline.Builder()
             .addTimelineEntry(TimelineBuilders.TimelineEntry.Builder().setLayout(layout).build())
             .build()
@@ -92,7 +94,8 @@ class TimeOfWarTileService : TileService() {
             .setSize(DimensionBuilders.sp(sizeSp))
             .setColor(ColorBuilders.argb(color))
             .build()
-        return LayoutElementBuilders.Text.Builder(this, value)
+        return LayoutElementBuilders.Text.Builder()
+            .setText(value)
             .setFontStyle(style)
             .build()
     }
