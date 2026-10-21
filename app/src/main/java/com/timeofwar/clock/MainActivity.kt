@@ -40,11 +40,13 @@ private val Event2014 = LocalDateTime.of(2014, 2, 20, 12, 0)
 class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
+        TileRefreshScheduler.schedule(this)
         runCatching { androidx.wear.tiles.TileService.getUpdater(this).requestUpdate(TimeOfWarTileService::class.java) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TileRefreshScheduler.schedule(this)
         setContent { MaterialTheme(colorScheme = darkColorScheme()) { WatchHome(this) } }
     }
 }

@@ -29,6 +29,7 @@ import java.time.Duration
 class TimeOfWarTileService : TileService() {
     override fun onTileRequest(requestParams: RequestBuilders.TileRequest): ListenableFuture<TileBuilders.Tile> {
         val prefs = getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
+        TileRefreshScheduler.schedule(this)
         val now = LocalDateTime.now()
         val fontSize = prefs.getFloat("fontSize", 18f)
         val textColor = android.graphics.Color.rgb(
@@ -120,7 +121,7 @@ class TimeOfWarTileService : TileService() {
         val tile = TileBuilders.Tile.Builder()
             .setResourcesVersion("1")
             .setTileTimeline(timeline)
-            .setFreshnessIntervalMillis(15 * 60 * 1000L)
+            .setFreshnessIntervalMillis(if (prefs.getBoolean("showHour", true)) 60 * 60 * 1000L else 24 * 60 * 60 * 1000L)
             .build()
         return Futures.immediateFuture(tile)
     }
