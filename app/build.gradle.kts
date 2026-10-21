@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.timeofwar.clock"
-        minSdk = 30
+        minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     buildFeatures { compose = true }
@@ -37,5 +37,6 @@ dependencies {
     implementation("androidx.wear:wear:1.3.0")
     implementation("androidx.wear.tiles:tiles:1.4.1")
     implementation("com.google.guava:guava:33.3.1-android")
+    testImplementation("junit:junit:4.13.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

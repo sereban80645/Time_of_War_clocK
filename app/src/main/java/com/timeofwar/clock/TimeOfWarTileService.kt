@@ -100,19 +100,5 @@ class TimeOfWarTileService : TileService() {
             .build()
     }
 
-    private fun counterText(start: LocalDateTime, now: LocalDateTime, daysOnly: Boolean, showHours: Boolean): String {
-        val duration = Duration.between(start, now)
-        if (daysOnly) {
-            val days = duration.toDays() + 1
-            val hours = ((duration.toHours() % 24) + 24) % 24
-            return if (showHours) "${days} д. ${hours} год." else "${days} д."
-        }
-        var period = Period.between(start.toLocalDate(), now.toLocalDate())
-        if (now.toLocalTime().isBefore(start.toLocalTime()) && !now.toLocalDate().isEqual(start.toLocalDate())) {
-            period = period.minusDays(1)
-        }
-        val hours = ((duration.toHours() % 24) + 24) % 24
-        val base = "${period.years} р. ${period.months} міс. ${period.days} д."
-        return if (showHours) "$base $hours год." else base
-    }
-}
+    private fun counterText(start: LocalDateTime, now: LocalDateTime, daysOnly: Boolean, showHours: Boolean): String =
+        CounterFormatter.format(start, now, daysOnly, showHours)

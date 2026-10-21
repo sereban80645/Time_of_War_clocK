@@ -175,21 +175,5 @@ private fun Counter(title: String, value: String, fontSize: Float, strokeWidth: 
     }
 }
 
-private fun counter(start: LocalDateTime, now: LocalDateTime, daysOnly: Boolean, showHours: Boolean): String {
-    if (daysOnly) {
-        val days = Duration.between(start, now).toDays() + 1
-        val hours = max(0, Duration.between(start, now).toHours().toInt() % 24)
-        return "$days д." + if (showHours) " $hours г." else ""
-    }
-    var years = now.year - start.year
-    var months = now.monthValue - start.monthValue
-    var days = now.dayOfMonth - start.dayOfMonth
-    var hours = now.hour - start.hour
-    val minutes = now.minute - start.minute
-    if (minutes < 0) hours--
-    if (hours < 0) { days--; hours += 24 }
-    if (days < 0) { months--; days += now.minusMonths(1).toLocalDate().lengthOfMonth() }
-    if (months < 0) { years--; months += 12 }
-    val core = "${years}р. ${months}міс. ${days}д."
-    return core + if (showHours) " ${hours}г." else ""
-}
+private fun counter(start: LocalDateTime, now: LocalDateTime, daysOnly: Boolean, showHours: Boolean): String =
+    CounterFormatter.format(start, now, daysOnly, showHours)
