@@ -38,6 +38,11 @@ private val Event2022 = LocalDateTime.of(2022, 2, 24, 2, 40)
 private val Event2014 = LocalDateTime.of(2014, 2, 20, 12, 0)
 
 class MainActivity : ComponentActivity() {
+    override fun onPause() {
+        super.onPause()
+        runCatching { androidx.wear.tiles.TileService.getUpdater(this).requestUpdate(TimeOfWarTileService::class.java) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent { MaterialTheme(colorScheme = darkColorScheme()) { WatchHome(this) } }

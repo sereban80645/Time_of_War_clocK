@@ -20,7 +20,7 @@ jobs:
       - name: Show Gradle version
         run: gradle --version
       - name: Build Wear OS debug APK
-        run: gradle :app:assembleDebug
+        run: gradle :app:testDebugUnitTest :app:assembleDebug
       - name: Upload Wear OS APK
         uses: actions/upload-artifact@v4
         with:
