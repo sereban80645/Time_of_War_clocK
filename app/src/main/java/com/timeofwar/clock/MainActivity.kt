@@ -145,7 +145,7 @@ private fun Counter(title: String, value: String, fontSize: Float, strokeWidth: 
         androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 1.65f).dp)) {
             val paint = android.text.TextPaint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
                 textSize = fontSize * density; typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
-                textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; strokeWidth = strokeWidth * density; color = strokeColor.toArgb()
+                textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; setStrokeWidth(strokeWidth * density); color = strokeColor.toArgb()
             }
             val y = size.height / 2f - (paint.ascent() + paint.descent()) / 2f
             drawContext.canvas.nativeCanvas.drawText(value, size.width / 2f, y, paint)
