@@ -1,25 +1,30 @@
 # Time_of_War_clocK
 
-A separate smartwatch project for Time of War, targeting Wear OS watches from Samsung and other manufacturers. The original `time_of_war_new` project is not modified.
+A separate, offline-first Wear OS smartwatch project. The original `time_of_war_new` repository is not modified, and this watch app does not require that phone app to be installed.
 
-## Platform strategy
+## Target devices
 
-- **Primary target:** Wear OS (Samsung Galaxy Watch running Wear OS, Google Pixel Watch, and other compatible Wear OS devices).
-- **Not a universal watch APK:** Garmin/watchOS and Huawei models running non-Wear-OS systems require separate platform apps and cannot install this Android package.
-- **Phone companion integration:** The current phone app's settings are documented as the source of truth. A subsequent integration step must add Wear OS Data Layer synchronization to the phone project and this watch app. Until that is integrated and device-tested, settings on the watch are stored locally and are not automatically synchronized.
+- Wear OS watches, including Samsung Galaxy Watch models running Wear OS, Google Pixel Watch, and other compatible Wear OS devices.
+- Garmin, Apple Watch, and Huawei devices running non-Wear-OS platforms cannot install this APK; they would need separate platform-specific apps.
 
-## Preserved setting contract
+## Current implementation
 
-The watch app is designed to support the same options as the phone app: show the 24 Feb 2022 counter, show the 20 Feb 2014 counter, days-only or years/months/days, show/hide hours, font size, outline width, background opacity, RGB text/background/outline colors, and a locally stored background image.
+- Standalone Wear OS app with local settings stored on the watch.
+- Offline Wear OS Tile that reads settings on the watch and opens the watch app when tapped.
+- Two event toggles for 24 February 2022 at 02:40 and 20 February 2014 at 12:00.
+- Days-only or years/months/days display, optional hours, font size, outline width, background opacity, RGB text/outline/background colors, and a locally copied custom background image.
+- GitHub Actions builds a debug APK on pushes to `main`.
+
+## Important status
+
+This is still an early prototype, not a feature-complete release. Tile UI and counter formatting require validation against the source app's exact arithmetic and on physical watches. Built-in background presets, a watch-face/complication implementation, comprehensive automated date tests, and testing across device manufacturers remain follow-up work. A Tile is a Wear OS system surface, not a universal home-screen widget on every watch platform.
 
 ## Build
 
-Open this project in Android Studio with JDK 17+ and Android SDK / Wear OS SDK installed, or run `./gradlew :app:assembleDebug`. GitHub Actions builds the watch APK on each push and manual run.
+Open in Android Studio with JDK 17 and Android SDK / Wear OS SDK installed, or run:
 
-## Acceptance checks
+```bash
+./gradlew :app:assembleDebug
+```
 
-1. App installs on a Wear OS emulator/device and starts without crashing.
-2. Both counters use the exact event start times: 2022-02-24 02:40 and 2014-02-20 12:00 (device local time, matching the phone implementation).
-3. Settings persist after closing/reopening the app.
-4. The phone project remains unchanged.
-5. Data Layer sync, Tile, and complication are separate follow-up deliverables and must not be called complete until implemented and tested.
+GitHub Actions publishes `app-debug.apk` as a workflow artifact.
