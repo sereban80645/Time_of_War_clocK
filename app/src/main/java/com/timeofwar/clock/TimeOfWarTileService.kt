@@ -1,6 +1,11 @@
 package com.timeofwar.clock
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import java.io.ByteArrayOutputStream
+import java.io.File
+import androidx.wear.protolayout.TypeBuilders
 import androidx.wear.tiles.TileService
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
@@ -37,6 +42,10 @@ class TimeOfWarTileService : TileService() {
             prefs.getFloat("bgR", 30f).toInt().coerceIn(0, 255),
             prefs.getFloat("bgG", 30f).toInt().coerceIn(0, 255),
             prefs.getFloat("bgB", 30f).toInt().coerceIn(0, 255)
+        )
+        val backgroundPreset = prefs.getString("backgroundPreset", "night") ?: "night"
+        val hasBackgroundImage = backgroundPreset != "color" && (
+            backgroundPreset != "custom" || File(prefs.getString("imagePath", "") ?: "").let { it.exists() && it.length() > 0L }
         )
         val lines = mutableListOf<String>()
         if (prefs.getBoolean("show2022", true)) {
@@ -84,6 +93,23 @@ class TimeOfWarTileService : TileService() {
                             .build()
                     ).build()
             )
+            .apply {
+                if (hasBackgroundImage) {
+                    addContent(
+                        LayoutElementBuilders.Image.Builder()
+                            .setResourceId("watch_background")
+                            .setWidth(DimensionBuilders.expand())
+                            .setHeight(DimensionBuilders.expand())
+                            .setContentScaleMode(LayoutElementBuilders.CONTENT_SCALE_MODE_CROP)
+                            .setModifiers(
+                                ModifiersBuilders.Modifiers.Builder()
+                                    .setOpacity(TypeBuilders.FloatProp.Builder().setValue(bgOpacity).build())
+                                    .build()
+                            )
+                            .build()
+                    )
+                }
+            }
             .addContent(column.build())
             .build()
 
@@ -100,8 +126,44 @@ class TimeOfWarTileService : TileService() {
     }
 
     override fun onTileResourcesRequest(requestParams: RequestBuilders.ResourcesRequest): ListenableFuture<ResourceBuilders.Resources> {
-        return Futures.immediateFuture(ResourceBuilders.Resources.Builder().setVersion("1").build())
+        val prefs = getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
+        val preset = prefs.getString("backgroundPreset", "night") ?: "night"
+        val resources = ResourceBuilders.Resources.Builder().setVersion("1")
+        val imageResource = when (preset) {
+            "color" -> null
+            "ukraine" -> drawableResource(R.drawable.bg_ukraine)
+            "camo" -> drawableResource(R.drawable.bg_camo)
+            "redblack" -> drawableResource(R.drawable.bg_red_black)
+            "custom" -> customImageResource(prefs.getString("imagePath", "") ?: "")
+            else -> drawableResource(R.drawable.bg_night)
+        }
+        if (imageResource != null) resources.addIdToImageMapping("watch_background", imageResource)
+        return Futures.immediateFuture(resources.build())
     }
+
+    private fun drawableResource(drawableId: Int): ResourceBuilders.ImageResource =
+        ResourceBuilders.ImageResource.Builder()
+            .setAndroidResourceByResId(
+                ResourceBuilders.AndroidImageResourceByResId.Builder()
+                    .setResourceId(drawableId)
+                    .build()
+            ).build()
+
+    private fun customImageResource(path: String): ResourceBuilders.ImageResource? = runCatching {
+        val source = BitmapFactory.decodeFile(path) ?: return null
+        val scale = minOf(1f, 320f / maxOf(source.width, source.height))
+        val bitmap = if (scale < 1f) Bitmap.createScaledBitmap(source, (source.width * scale).toInt().coerceAtLeast(1), (source.height * scale).toInt().coerceAtLeast(1), true) else source
+        val output = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 78, output)
+        val inline = ResourceBuilders.InlineImageResource.Builder()
+            .setData(output.toByteArray())
+            .setWidthPx(bitmap.width)
+            .setHeightPx(bitmap.height)
+            .build()
+        if (bitmap !== source) bitmap.recycle()
+        source.recycle()
+        ResourceBuilders.ImageResource.Builder().setInlineResource(inline).build()
+    }.getOrNull()
 
     private fun textElement(value: String, sizeSp: Float, color: Int): LayoutElementBuilders.Text {
         val style = LayoutElementBuilders.FontStyle.Builder()
