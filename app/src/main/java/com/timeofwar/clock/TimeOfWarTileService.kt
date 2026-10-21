@@ -82,7 +82,8 @@ class TimeOfWarTileService : TileService() {
         events.forEach { (title, counter) ->
             column.addContent(textElement(title, 9f, 0xFFFFFFFF.toInt()))
             if (counter.isNotBlank()) {
-                column.addContent(textElement(counter, (fontSize * 0.72f).coerceIn(13f, 22f), textColor))
+                val fitScale = (220f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.58f, 1f)
+                column.addContent(textElement(counter, (fontSize * 0.72f * fitScale).coerceIn(11f, 22f), textColor))
             }
         }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(2f)).build())
