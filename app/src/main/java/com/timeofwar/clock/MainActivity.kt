@@ -159,6 +159,7 @@ private fun WatchHome(activity: Activity) {
         }
     }
 }
+}
 
 @Composable
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
