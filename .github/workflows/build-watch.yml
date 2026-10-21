@@ -15,7 +15,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Validate Gradle wrapper availability
+        with:
+          gradle-version: '8.13'
+      - name: Show Gradle version
         run: gradle --version
       - name: Build Wear OS debug APK
         run: gradle :app:assembleDebug

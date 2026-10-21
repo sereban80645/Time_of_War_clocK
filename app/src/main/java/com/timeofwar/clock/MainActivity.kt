@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +30,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
 private val Event2022 = LocalDateTime.of(2022, 2, 24, 2, 40)
@@ -47,10 +46,9 @@ private class WatchPrefs(context: Context) {
     private val p = context.getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
     fun bool(key: String, default: Boolean) = p.getBoolean(key, default)
     fun float(key: String, default: Float) = p.getFloat(key, default)
-    fun int(key: String, default: Int) = p.getInt(key, default)
     fun string(key: String, default: String = "") = p.getString(key, default) ?: default
     fun put(key: String, value: Any) { p.edit().apply { when(value) {
-        is Boolean -> putBoolean(key, value); is Float -> putFloat(key, value); is Int -> putInt(key, value); is String -> putString(key, value)
+        is Boolean -> putBoolean(key, value); is Float -> putFloat(key, value); is String -> putString(key, value)
     } }.apply() }
 }
 
@@ -80,8 +78,10 @@ private fun WatchHome(activity: Activity) {
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) runCatching {
             val target = File(activity.filesDir, "watch_background.img")
-            activity.contentResolver.openInputStream(uri)?.use { input -> FileOutputStream(target).use { output -> input.copyTo(output) } }
-            imagePath = target.absolutePath; prefs.put("imagePath", imagePath)
+            val copied = activity.contentResolver.openInputStream(uri)?.use { input -> FileOutputStream(target).use { output -> input.copyTo(output) } }
+            if (copied != null && target.exists() && target.length() > 0L) {
+                imagePath = target.absolutePath; prefs.put("imagePath", imagePath)
+            }
         }
     }
     val textColor = Color(textR / 255f, textG / 255f, textB / 255f)
