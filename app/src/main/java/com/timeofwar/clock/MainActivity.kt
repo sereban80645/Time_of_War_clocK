@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +74,7 @@ private fun WatchHome(activity: Activity) {
     var bgG by remember { mutableFloatStateOf(prefs.float("bgG", 30f)) }
     var bgB by remember { mutableFloatStateOf(prefs.float("bgB", 30f)) }
     var imagePath by remember { mutableStateOf(prefs.string("imagePath")) }
+    var backgroundPreset by remember { mutableStateOf(prefs.string("backgroundPreset", if (prefs.string("imagePath").isNotBlank()) "custom" else "night")) }
     var now by remember { mutableStateOf(LocalDateTime.now()) }
     LaunchedEffect(Unit) { while (true) { now = LocalDateTime.now(); kotlinx.coroutines.delay(1000) } }
 
@@ -81,6 +84,7 @@ private fun WatchHome(activity: Activity) {
             val copied = activity.contentResolver.openInputStream(uri)?.use { input -> FileOutputStream(target).use { output -> input.copyTo(output) } }
             if (copied != null && target.exists() && target.length() > 0L) {
                 imagePath = target.absolutePath; prefs.put("imagePath", imagePath)
+                backgroundPreset = "custom"; prefs.put("backgroundPreset", backgroundPreset)
             }
         }
     }
@@ -88,12 +92,21 @@ private fun WatchHome(activity: Activity) {
     val strokeColor = Color(strokeR / 255f, strokeG / 255f, strokeB / 255f)
     val bgColor = Color(bgR / 255f, bgG / 255f, bgB / 255f)
 
-    Column(Modifier.fillMaxSize().background(bgColor.copy(alpha = opacity.coerceIn(0f, 1f))).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("TIME OF WAR", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        if (imagePath.isNotBlank()) {
+    Box(Modifier.fillMaxSize().background(bgColor.copy(alpha = opacity.coerceIn(0f, 1f)))) {
+        if (backgroundPreset == "custom" && imagePath.isNotBlank()) {
             val bitmap = remember(imagePath) { runCatching { BitmapFactory.decodeFile(imagePath)?.asImageBitmap() }.getOrNull() }
-            if (bitmap != null) Image(bitmap, contentDescription = "Фонове зображення", modifier = Modifier.fillMaxWidth().height(65.dp).alpha(opacity))
+            if (bitmap != null) Image(bitmap, contentDescription = "Власне фонове зображення", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
+        } else if (backgroundPreset != "color") {
+            val presetRes = when (backgroundPreset) {
+                "ukraine" -> R.drawable.bg_ukraine
+                "camo" -> R.drawable.bg_camo
+                "redblack" -> R.drawable.bg_red_black
+                else -> R.drawable.bg_night
+            }
+            Image(painter = painterResource(presetRes), contentDescription = "Вбудований фон", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
         }
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("TIME OF WAR", fontSize = 12.sp, fontWeight = FontWeight.Bold)
         if (show2022) Counter("Повномасштабна війна", counter(Event2022, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         if (show2014) Counter("Війна з 2014 року", counter(Event2014, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         HorizontalDivider(Modifier.padding(vertical = 6.dp))
@@ -117,8 +130,15 @@ private fun WatchHome(activity: Activity) {
         SettingSlider("R", bgR, 0f, 255f) { bgR = it; prefs.put("bgR", it) }
         SettingSlider("G", bgG, 0f, 255f) { bgG = it; prefs.put("bgG", it) }
         SettingSlider("B", bgB, 0f, 255f) { bgB = it; prefs.put("bgB", it) }
-        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth()) { Text("Вибрати фон") }
+        Text("Вбудовані фони", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Темний") }
+        Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Прапор України") }
+        Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Камуфляж") }
+        Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Чорно-червоний") }
+        Button(onClick = { backgroundPreset = "color"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Лише колір RGB") }
+        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth()) { Text("Вибрати власне фото") }
         Spacer(Modifier.height(16.dp))
+        }
     }
 }
 
