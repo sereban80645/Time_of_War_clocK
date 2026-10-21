@@ -31,7 +31,7 @@ class TimeOfWarTileService : TileService() {
         val prefs = getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
         TileRefreshScheduler.schedule(this)
         val now = LocalDateTime.now()
-        val fontSize = prefs.getFloat("fontSize", 18f)
+        val fontSize = prefs.getFloat("fontSize", 24f).coerceIn(12f, 48f)
         val textColor = android.graphics.Color.rgb(
             prefs.getFloat("textR", 255f).toInt().coerceIn(0, 255),
             prefs.getFloat("textG", 255f).toInt().coerceIn(0, 255),
@@ -48,20 +48,20 @@ class TimeOfWarTileService : TileService() {
         val hasBackgroundImage = backgroundPreset != "color" && (
             backgroundPreset != "custom" || File(prefs.getString("imagePath", "") ?: "").let { it.exists() && it.length() > 0L }
         )
-        val lines = mutableListOf<String>()
+        val events = mutableListOf<Pair<String, String>>()
         if (prefs.getBoolean("show2022", true)) {
-            lines += "24.02.2022 · " + counterText(
+            events += "Повномасштабне вторгнення" to counterText(
                 LocalDateTime.of(2022, 2, 24, 2, 40), now,
                 prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true)
             )
         }
         if (prefs.getBoolean("show2014", false)) {
-            lines += "20.02.2014 · " + counterText(
+            events += "Війна з 2014 року" to counterText(
                 LocalDateTime.of(2014, 2, 20, 12, 0), now,
                 prefs.getBoolean("showDaysOnly", false), prefs.getBoolean("showHour", true)
             )
         }
-        if (lines.isEmpty()) lines += "Увімкніть подію в налаштуваннях"
+        if (events.isEmpty()) events += "Увімкніть подію в налаштуваннях" to ""
 
         val openSettings = ActionBuilders.LaunchAction.Builder()
             .setAndroidActivity(
@@ -71,13 +71,22 @@ class TimeOfWarTileService : TileService() {
                     .build()
             ).build()
 
+        val customFile = File(prefs.getString("imagePath", "") ?: "")
+        // Change the tile/resource cache key whenever saved preferences or the selected photo changes.
+        val resourceVersion = "prefs-${prefs.all.hashCode()}-${customFile.lastModified()}-${customFile.length()}"
+
         val column = LayoutElementBuilders.Column.Builder()
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
             .addContent(textElement("TIME OF WAR", 12f, 0xFFBDBDBD.toInt()))
             .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(4f)).build())
-        lines.forEach { line -> column.addContent(textElement(line, (fontSize * 0.65f).coerceIn(10f, 18f), textColor)) }
-        column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(5f)).build())
-        column.addContent(textElement("Торкніться для налаштувань", 10f, 0xFF80CBC4.toInt()))
+        events.forEach { (title, counter) ->
+            column.addContent(textElement(title, 9f, 0xFFFFFFFF.toInt()))
+            if (counter.isNotBlank()) {
+                column.addContent(textElement(counter, (fontSize * 0.72f).coerceIn(13f, 22f), textColor))
+            }
+        }
+        column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(2f)).build())
+        column.addContent(textElement("Торкніться для налаштувань", 8f, 0xFF80CBC4.toInt()))
 
         val root = LayoutElementBuilders.Box.Builder()
             .setWidth(DimensionBuilders.expand())
@@ -119,7 +128,7 @@ class TimeOfWarTileService : TileService() {
             .addTimelineEntry(TimelineBuilders.TimelineEntry.Builder().setLayout(layout).build())
             .build()
         val tile = TileBuilders.Tile.Builder()
-            .setResourcesVersion("1")
+            .setResourcesVersion(resourceVersion)
             .setTileTimeline(timeline)
             .setFreshnessIntervalMillis(if (prefs.getBoolean("showHour", true)) 60 * 60 * 1000L else 24 * 60 * 60 * 1000L)
             .build()
@@ -129,7 +138,9 @@ class TimeOfWarTileService : TileService() {
     override fun onTileResourcesRequest(requestParams: RequestBuilders.ResourcesRequest): ListenableFuture<ResourceBuilders.Resources> {
         val prefs = getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
         val preset = prefs.getString("backgroundPreset", "night") ?: "night"
-        val resources = ResourceBuilders.Resources.Builder().setVersion("1")
+        val customFile = File(prefs.getString("imagePath", "") ?: "")
+        val version = "prefs-${prefs.all.hashCode()}-${customFile.lastModified()}-${customFile.length()}"
+        val resources = ResourceBuilders.Resources.Builder().setVersion(version)
         val imageResource = when (preset) {
             "color" -> null
             "ukraine" -> drawableResource(R.drawable.bg_ukraine)

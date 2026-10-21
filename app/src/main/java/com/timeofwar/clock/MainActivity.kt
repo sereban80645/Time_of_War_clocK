@@ -68,7 +68,7 @@ private fun WatchHome(activity: Activity) {
     var show2014 by remember { mutableStateOf(prefs.bool("show2014", false)) }
     var daysOnly by remember { mutableStateOf(prefs.bool("showDaysOnly", false)) }
     var showHours by remember { mutableStateOf(prefs.bool("showHour", true)) }
-    var fontSize by remember { mutableFloatStateOf(prefs.float("fontSize", 18f)) }
+    var fontSize by remember { mutableFloatStateOf(prefs.float("fontSize", 24f)) }
     var strokeWidth by remember { mutableFloatStateOf(prefs.float("strokeWidth", 2f)) }
     var opacity by remember { mutableFloatStateOf(prefs.float("opacity", .5f)) }
     var textR by remember { mutableFloatStateOf(prefs.float("textR", 255f)) }
@@ -112,68 +112,82 @@ private fun WatchHome(activity: Activity) {
             }
             Image(painter = painterResource(presetRes), contentDescription = "Вбудований фон", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
         }
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxSize()) {
+        // Закріплений попередній перегляд: параметри прокручуються окремо нижче.
+        Column(
+            Modifier.fillMaxWidth().weight(0.40f).padding(horizontal = 8.dp, vertical = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
         Text("TIME OF WAR", fontSize = 12.sp, fontWeight = FontWeight.Bold)
         if (show2022) Counter("Повномасштабна війна", counter(Event2022, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         if (show2014) Counter("Війна з 2014 року", counter(Event2014, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
-        HorizontalDivider(Modifier.padding(vertical = 6.dp))
-        Text("НАЛАШТУВАННЯ", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        }
+        Column(
+            Modifier.fillMaxWidth().weight(0.60f).background(Color(0xFF151515))
+                .verticalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 3.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+        Text("НАЛАШТУВАННЯ", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
         SettingSwitch("Відлік з 24.02.2022", show2022) { show2022 = it; prefs.put("show2022", it) }
         SettingSwitch("Відлік з 20.02.2014", show2014) { show2014 = it; prefs.put("show2014", it) }
         SettingSwitch("Тільки дні", daysOnly) { daysOnly = it; prefs.put("showDaysOnly", it) }
         SettingSwitch("Показувати години", showHours) { showHours = it; prefs.put("showHour", it) }
-        SettingSlider("Розмір шрифту", fontSize, 10f, 30f) { fontSize = it; prefs.put("fontSize", it) }
+        SettingSlider("Розмір цифр", fontSize, 12f, 48f) { fontSize = it; prefs.put("fontSize", it) }
         SettingSlider("Товщина обведення", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
         SettingSlider("Прозорість фону", opacity, 0f, 1f) { opacity = it; prefs.put("opacity", it) }
-        Text("Колір тексту RGB", fontSize = 11.sp)
+        Text("Колір тексту RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }
         SettingSlider("G", textG, 0f, 255f) { textG = it; prefs.put("textG", it) }
         SettingSlider("B", textB, 0f, 255f) { textB = it; prefs.put("textB", it) }
-        Text("Колір обведення RGB", fontSize = 11.sp)
+        Text("Колір обведення RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", strokeR, 0f, 255f) { strokeR = it; prefs.put("strokeR", it) }
         SettingSlider("G", strokeG, 0f, 255f) { strokeG = it; prefs.put("strokeG", it) }
         SettingSlider("B", strokeB, 0f, 255f) { strokeB = it; prefs.put("strokeB", it) }
-        Text("Колір фону RGB", fontSize = 11.sp)
+        Text("Колір фону RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", bgR, 0f, 255f) { bgR = it; prefs.put("bgR", it) }
         SettingSlider("G", bgG, 0f, 255f) { bgG = it; prefs.put("bgG", it) }
         SettingSlider("B", bgB, 0f, 255f) { bgB = it; prefs.put("bgB", it) }
-        Text("Вбудовані фони", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text("Вбудовані фони", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
         Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Темний") }
         Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Прапор України") }
         Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Камуфляж") }
         Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Чорно-червоний") }
         Button(onClick = { backgroundPreset = "color"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Лише колір RGB") }
         Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth()) { Text("Вибрати власне фото") }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(6.dp))
         }
     }
 }
 
 @Composable
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.weight(1f), fontSize = 11.sp)
+    Row(Modifier.fillMaxWidth().heightIn(min = 32.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, modifier = Modifier.weight(1f), fontSize = 11.sp, color = Color.White)
         Switch(checked = checked, onCheckedChange = onChange)
     }
 }
 
 @Composable
 private fun SettingSlider(label: String, value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
-        Text("$label: ${"%.0f".format(value)}", fontSize = 10.sp)
-        Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max)
+    Column(Modifier.fillMaxWidth()) {
+        Text("$label: ${"%.0f".format(value)}", fontSize = 10.sp, color = Color.White)
+        Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max, modifier = Modifier.height(30.dp))
     }
 }
 
 @Composable
 private fun Counter(title: String, value: String, fontSize: Float, strokeWidth: Float, textColor: Color, strokeColor: Color) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(title, fontSize = 10.sp, color = Color.LightGray)
-        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 1.65f).dp)) {
+        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 1.35f).dp)) {
             val paint = android.text.TextPaint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
                 textSize = fontSize * density; typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
                 textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; setStrokeWidth(strokeWidth * density); color = strokeColor.toArgb()
             }
+            val maxTextWidth = size.width * 0.96f
+            val measuredWidth = paint.measureText(value)
+            if (measuredWidth > maxTextWidth && measuredWidth > 0f) paint.textSize *= maxTextWidth / measuredWidth
             val y = size.height / 2f - (paint.ascent() + paint.descent()) / 2f
             drawContext.canvas.nativeCanvas.drawText(value, size.width / 2f, y, paint)
             paint.style = android.graphics.Paint.Style.FILL; paint.color = textColor.toArgb()
