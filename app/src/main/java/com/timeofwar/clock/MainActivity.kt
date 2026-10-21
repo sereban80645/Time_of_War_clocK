@@ -81,7 +81,7 @@ private fun WatchHome(activity: Activity) {
     var imagePath by remember { mutableStateOf(prefs.string("imagePath")) }
     var backgroundPreset by remember { mutableStateOf(prefs.string("backgroundPreset", if (prefs.string("imagePath").isNotBlank()) "custom" else "night")) }
     var now by remember { mutableStateOf(LocalDateTime.now()) }
-    LaunchedEffect(Unit) { while (true) { now = LocalDateTime.now(); kotlinx.coroutines.delay(1000) } }
+    LaunchedEffect(Unit) { while (true) { now = LocalDateTime.now(); kotlinx.coroutines.delay(60_000) } }
 
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) runCatching {

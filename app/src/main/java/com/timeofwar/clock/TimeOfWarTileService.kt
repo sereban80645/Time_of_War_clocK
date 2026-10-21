@@ -25,6 +25,19 @@ class TimeOfWarTileService : TileService() {
     override fun onTileRequest(requestParams: RequestBuilders.TileRequest): ListenableFuture<TileBuilders.Tile> {
         val prefs = getSharedPreferences("time_of_war_clock", Context.MODE_PRIVATE)
         val now = LocalDateTime.now()
+        val fontSize = prefs.getFloat("fontSize", 18f)
+        val textColor = android.graphics.Color.rgb(
+            prefs.getFloat("textR", 255f).toInt().coerceIn(0, 255),
+            prefs.getFloat("textG", 255f).toInt().coerceIn(0, 255),
+            prefs.getFloat("textB", 255f).toInt().coerceIn(0, 255)
+        )
+        val bgOpacity = prefs.getFloat("opacity", 0.5f).coerceIn(0f, 1f)
+        val bgColor = android.graphics.Color.argb(
+            (bgOpacity * 255).toInt(),
+            prefs.getFloat("bgR", 30f).toInt().coerceIn(0, 255),
+            prefs.getFloat("bgG", 30f).toInt().coerceIn(0, 255),
+            prefs.getFloat("bgB", 30f).toInt().coerceIn(0, 255)
+        )
         val lines = mutableListOf<String>()
         if (prefs.getBoolean("show2022", true)) {
             lines += "24.02.2022 · " + counterText(
@@ -52,7 +65,7 @@ class TimeOfWarTileService : TileService() {
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
             .addContent(textElement("TIME OF WAR", 12f, 0xFFBDBDBD.toInt()))
             .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(4f)).build())
-        lines.forEach { line -> column.addContent(textElement(line, 14f, 0xFFFFFFFF.toInt())) }
+        lines.forEach { line -> column.addContent(textElement(line, (fontSize * 0.65f).coerceIn(10f, 18f), textColor)) }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(5f)).build())
         column.addContent(textElement("Торкніться для налаштувань", 10f, 0xFF80CBC4.toInt()))
 
@@ -63,6 +76,7 @@ class TimeOfWarTileService : TileService() {
             .setVerticalAlignment(LayoutElementBuilders.VERTICAL_ALIGN_CENTER)
             .setModifiers(
                 ModifiersBuilders.Modifiers.Builder()
+                    .setBackground(ModifiersBuilders.Background.Builder().setColor(ColorBuilders.argb(bgColor)).build())
                     .setClickable(
                         ModifiersBuilders.Clickable.Builder()
                             .setId("open_settings")
