@@ -178,3 +178,4 @@ class TimeOfWarTileService : TileService() {
 
     private fun counterText(start: LocalDateTime, now: LocalDateTime, daysOnly: Boolean, showHours: Boolean): String =
         CounterFormatter.format(start, now, daysOnly, showHours)
+}
