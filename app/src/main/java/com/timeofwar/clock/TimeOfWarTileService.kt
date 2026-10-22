@@ -42,7 +42,7 @@ class TimeOfWarTileService : TileService() {
             prefs.getFloat("strokeG", 0f).toInt().coerceIn(0, 255),
             prefs.getFloat("strokeB", 0f).toInt().coerceIn(0, 255)
         )
-        val bgOpacity = prefs.getFloat("opacity", 0.5f).coerceIn(0f, 1f)
+        val bgOpacity = 1f
         val bgColor = android.graphics.Color.argb(
             (bgOpacity * 255).toInt(),
             prefs.getFloat("bgR", 30f).toInt().coerceIn(0, 255),
@@ -90,13 +90,18 @@ class TimeOfWarTileService : TileService() {
                 8f, 0xFFFFFFFF.toInt()
             ))
             if (counter.isNotBlank()) {
-                val fitScale = (170f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.42f, 0.82f)
-                column.addContent(outlinedTextElement(
-                    counter,
-                    (fontSize * 0.58f * fitScale).coerceIn(9f, 15f),
-                    textColor,
-                    strokeColor
-                ))
+                // Split long counters into two readable rows so days/hours are not clipped on the Tile.
+                val splitAt = counter.indexOf(" д. ")
+                val rows = if (splitAt >= 0) listOf(counter.substring(0, splitAt + 3), counter.substring(splitAt + 4)) else listOf(counter)
+                rows.forEach { rowText ->
+                    val fitScale = (170f / rowText.length.coerceAtLeast(1).toFloat()).coerceIn(0.52f, 0.95f)
+                    column.addContent(outlinedTextElement(
+                        rowText,
+                        (fontSize * 0.60f * fitScale).coerceIn(9f, 15f),
+                        textColor,
+                        strokeColor
+                    ))
+                }
             }
         }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())

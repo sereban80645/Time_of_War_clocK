@@ -70,7 +70,6 @@ private fun WatchHome(activity: Activity) {
     var showHours by remember { mutableStateOf(prefs.bool("showHour", true)) }
     var fontSize by remember { mutableFloatStateOf(prefs.float("fontSize", 24f)) }
     var strokeWidth by remember { mutableFloatStateOf(prefs.float("strokeWidth", 2f)) }
-    var opacity by remember { mutableFloatStateOf(prefs.float("opacity", .5f)) }
     var textR by remember { mutableFloatStateOf(prefs.float("textR", 255f)) }
     var textG by remember { mutableFloatStateOf(prefs.float("textG", 255f)) }
     var textB by remember { mutableFloatStateOf(prefs.float("textB", 255f)) }
@@ -99,10 +98,10 @@ private fun WatchHome(activity: Activity) {
     val strokeColor = Color(strokeR / 255f, strokeG / 255f, strokeB / 255f)
     val bgColor = Color(bgR / 255f, bgG / 255f, bgB / 255f)
 
-    Box(Modifier.fillMaxSize().background(bgColor.copy(alpha = opacity.coerceIn(0f, 1f)))) {
+    Box(Modifier.fillMaxSize().background(bgColor)) {
         if (backgroundPreset == "custom" && imagePath.isNotBlank()) {
             val bitmap = remember(imagePath) { runCatching { BitmapFactory.decodeFile(imagePath)?.asImageBitmap() }.getOrNull() }
-            if (bitmap != null) Image(bitmap, contentDescription = "Власне фонове зображення", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
+            if (bitmap != null) Image(bitmap, contentDescription = "Власне фонове зображення", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else if (backgroundPreset != "color") {
             val presetRes = when (backgroundPreset) {
                 "ukraine" -> R.drawable.bg_ukraine
@@ -124,18 +123,21 @@ private fun WatchHome(activity: Activity) {
         if (show2014) Counter("Війна з 2014 року", counter(Event2014, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         }
         Column(
-            Modifier.fillMaxSize().background(Color(0xD9151515))
+            Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 3.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-        Text("НАЛАШТУВАННЯ", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
+        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            Image(painterResource(R.mipmap.ic_launcher), contentDescription = "Іконка Time of War", modifier = Modifier.size(22.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("НАЛАШТУВАННЯ", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White.copy(alpha = 0.92f))
+        }
         SettingSwitch("Відлік з 24.02.2022", show2022) { show2022 = it; prefs.put("show2022", it) }
         SettingSwitch("Відлік з 20.02.2014", show2014) { show2014 = it; prefs.put("show2014", it) }
         SettingSwitch("Тільки дні", daysOnly) { daysOnly = it; prefs.put("showDaysOnly", it) }
         SettingSwitch("Показувати години", showHours) { showHours = it; prefs.put("showHour", it) }
         SettingSlider("Розмір цифр", fontSize, 12f, 48f) { fontSize = it; prefs.put("fontSize", it) }
         SettingSlider("Товщина контуру", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
-        SettingSlider("Прозорість фону", opacity, 0f, 1f) { opacity = it; prefs.put("opacity", it) }
         Text("Колір тексту RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }
         SettingSlider("G", textG, 0f, 255f) { textG = it; prefs.put("textG", it) }
@@ -149,12 +151,11 @@ private fun WatchHome(activity: Activity) {
         SettingSlider("G", bgG, 0f, 255f) { bgG = it; prefs.put("bgG", it) }
         SettingSlider("B", bgB, 0f, 255f) { bgB = it; prefs.put("bgB", it) }
         Text("Вбудовані фони", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Темний") }
-        Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Прапор України") }
-        Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Камуфляж") }
-        Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Чорно-червоний") }
-        Button(onClick = { backgroundPreset = "color"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth()) { Text("Лише колір RGB") }
-        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth()) { Text("Вибрати власне фото") }
+        Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Темний") }
+        Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Прапор України") }
+        Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Камуфляж") }
+        Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Чорно-червоний") }
+        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Вибрати власне фото") }
         Spacer(Modifier.height(6.dp))
         }
     }
@@ -165,15 +166,20 @@ private fun WatchHome(activity: Activity) {
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth().heightIn(min = 32.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(label, modifier = Modifier.weight(1f), fontSize = 11.sp, color = Color.White)
-        Switch(checked = checked, onCheckedChange = onChange)
+        Switch(checked = checked, onCheckedChange = onChange, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color.White.copy(alpha = 0.48f), uncheckedThumbColor = Color.LightGray, uncheckedTrackColor = Color.Black.copy(alpha = 0.35f)))
     }
 }
 
 @Composable
 private fun SettingSlider(label: String, value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
-    Column(Modifier.fillMaxWidth()) {
-        Text("$label: ${"%.0f".format(value)}", fontSize = 10.sp, color = Color.White)
-        Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max, modifier = Modifier.height(30.dp))
+    val step = if (label == "Товщина контуру") 0.5f else 1f
+    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+        Text("$label: ${"%.1f".format(value)}", fontSize = 10.sp, color = Color.White.copy(alpha = 0.92f))
+        Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(onClick = { onChange((value - step).coerceAtLeast(min)) }, modifier = Modifier.sizeIn(minWidth = 38.dp, minHeight = 36.dp), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp), colors = ButtonDefaults.textButtonColors(contentColor = Color.White.copy(alpha = 0.95f))) { Text("−", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+            Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max, modifier = Modifier.weight(1f).height(34.dp), colors = SliderDefaults.colors(thumbColor = Color.White.copy(alpha = 0.94f), activeTrackColor = Color.White.copy(alpha = 0.82f), inactiveTrackColor = Color.White.copy(alpha = 0.35f)))
+            TextButton(onClick = { onChange((value + step).coerceAtMost(max)) }, modifier = Modifier.sizeIn(minWidth = 38.dp, minHeight = 36.dp), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp), colors = ButtonDefaults.textButtonColors(contentColor = Color.White.copy(alpha = 0.95f))) { Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+        }
     }
 }
 
