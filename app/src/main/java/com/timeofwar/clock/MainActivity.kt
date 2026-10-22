@@ -128,7 +128,7 @@ private fun WatchHome(activity: Activity) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
         Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            Image(painterResource(R.mipmap.ic_launcher), contentDescription = "Іконка Time of War", modifier = Modifier.size(22.dp))
+            Image(painterResource(R.drawable.ic_launcher_custom), contentDescription = "Іконка Time of War", modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(6.dp))
             Text("НАЛАШТУВАННЯ", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White.copy(alpha = 0.92f))
         }
