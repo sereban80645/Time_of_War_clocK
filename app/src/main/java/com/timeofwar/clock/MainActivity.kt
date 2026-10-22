@@ -112,10 +112,10 @@ private fun WatchHome(activity: Activity) {
             }
             Image(painter = painterResource(presetRes), contentDescription = "Вбудований фон", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
         }
-        Column(Modifier.fillMaxSize()) {
-        // Закріплений попередній перегляд: параметри прокручуються окремо нижче.
+        Box(Modifier.fillMaxSize()) {
+        // Повноекранний живий попередній перегляд залишається під панеллю налаштувань.
         Column(
-            Modifier.fillMaxWidth().weight(0.52f).padding(horizontal = 6.dp, vertical = 1.dp),
+            Modifier.fillMaxSize().padding(horizontal = 6.dp, vertical = 1.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -124,7 +124,7 @@ private fun WatchHome(activity: Activity) {
         if (show2014) Counter("Війна з 2014 року", counter(Event2014, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         }
         Column(
-            Modifier.fillMaxWidth().weight(0.48f).background(Color(0xFF151515))
+            Modifier.fillMaxSize().background(Color(0xD9151515))
                 .verticalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 3.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -134,7 +134,7 @@ private fun WatchHome(activity: Activity) {
         SettingSwitch("Тільки дні", daysOnly) { daysOnly = it; prefs.put("showDaysOnly", it) }
         SettingSwitch("Показувати години", showHours) { showHours = it; prefs.put("showHour", it) }
         SettingSlider("Розмір цифр", fontSize, 12f, 48f) { fontSize = it; prefs.put("fontSize", it) }
-        SettingSlider("Товщина обведення", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
+        SettingSlider("Товщина контуру", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
         SettingSlider("Прозорість фону", opacity, 0f, 1f) { opacity = it; prefs.put("opacity", it) }
         Text("Колір тексту RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }

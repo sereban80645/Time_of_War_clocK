@@ -82,22 +82,25 @@ class TimeOfWarTileService : TileService() {
 
         val column = LayoutElementBuilders.Column.Builder()
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
-            .addContent(textElement("TIME OF WAR", 12f, 0xFFBDBDBD.toInt()))
-            .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(4f)).build())
+            .addContent(textElement("TIME OF WAR", 9f, 0xFFBDBDBD.toInt()))
+            .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
         events.forEach { (title, counter) ->
-            column.addContent(textElement(title, 9f, 0xFFFFFFFF.toInt()))
+            column.addContent(textElement(
+                if (title == "Повномасштабне вторгнення") "З 24.02.2022" else if (title == "Війна з 2014 року") "З 20.02.2014" else title,
+                8f, 0xFFFFFFFF.toInt()
+            ))
             if (counter.isNotBlank()) {
-                val fitScale = (220f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.58f, 1f)
+                val fitScale = (170f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.42f, 0.82f)
                 column.addContent(outlinedTextElement(
                     counter,
-                    (fontSize * 0.72f * fitScale).coerceIn(11f, 22f),
+                    (fontSize * 0.58f * fitScale).coerceIn(9f, 15f),
                     textColor,
                     strokeColor
                 ))
             }
         }
-        column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(2f)).build())
-        column.addContent(textElement("Торкніться для налаштувань", 8f, 0xFF80CBC4.toInt()))
+        column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
+        column.addContent(textElement("Торкніться для налаштувань", 7f, 0xFF80CBC4.toInt()))
 
         val root = LayoutElementBuilders.Box.Builder()
             .setWidth(DimensionBuilders.expand())
