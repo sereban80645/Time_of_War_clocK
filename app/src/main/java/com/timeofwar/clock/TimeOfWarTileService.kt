@@ -93,11 +93,21 @@ class TimeOfWarTileService : TileService() {
             if (counter.isNotBlank()) {
                 // Give the counter the whole tile width and calculate font size from a width budget,
                 // instead of using a fixed character-count scale that can still clip on larger font settings.
-                val availableWidthDp = 184f
-                val estimatedGlyphWidthEm = 0.62f
-                val widthFitSp = availableWidthDp /
-                    (counter.length.coerceAtLeast(1).toFloat() * estimatedGlyphWidthEm)
-                val fittedFontSize = minOf(fontSize * 0.82f, widthFitSp).coerceIn(6f, 22f)
+                // Match the settings preview: use its effective text size, measure real glyph width,
+                // and scale only when needed so the full timer remains visible.
+                val density = resources.displayMetrics.density
+                val scaledDensity = resources.displayMetrics.scaledDensity
+                val previewFontSp = fontSize * 0.56f
+                val measurePaint = android.text.TextPaint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                    textSize = previewFontSp * scaledDensity
+                    typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
+                }
+                val maxTextWidthPx = (resources.configuration.screenWidthDp - 20f)
+                    .coerceAtLeast(80f) * density * 0.96f
+                val measuredTextWidthPx = measurePaint.measureText(counter)
+                val fittedFontSize = (previewFontSp * if (measuredTextWidthPx > maxTextWidthPx && measuredTextWidthPx > 0f) {
+                    maxTextWidthPx / measuredTextWidthPx
+                } else 1f).coerceAtLeast(4f)
                 column.addContent(outlinedTextElement(
                     counter,
                     fittedFontSize,
@@ -107,7 +117,8 @@ class TimeOfWarTileService : TileService() {
             }
         }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
-        column.addContent(textElement("Торкніться для налаштувань", 7f, 0xFF80CBC4.toInt()))
+        val clockText = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+        column.addContent(textElement(clockText, 12f, 0xFFFFFFFF.toInt()))
 
         val root = LayoutElementBuilders.Box.Builder()
             .setWidth(DimensionBuilders.expand())
@@ -151,7 +162,7 @@ class TimeOfWarTileService : TileService() {
         val tile = TileBuilders.Tile.Builder()
             .setResourcesVersion(resourceVersion)
             .setTileTimeline(timeline)
-            .setFreshnessIntervalMillis(if (prefs.getBoolean("showHour", true)) 60 * 60 * 1000L else 24 * 60 * 60 * 1000L)
+            .setFreshnessIntervalMillis(60 * 1000L)
             .build()
         return Futures.immediateFuture(tile)
     }
