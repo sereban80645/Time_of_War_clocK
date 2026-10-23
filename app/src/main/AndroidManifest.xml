@@ -42,7 +42,7 @@
             <intent-filter>
                 <action android:name="androidx.wear.tiles.action.BIND_TILE_PROVIDER" />
             </intent-filter>
-            <meta-data android:name="androidx.wear.tiles.PREVIEW" android:resource="@drawable/bg_night" />
+            <meta-data android:name="androidx.wear.tiles.PREVIEW" android:resource="@drawable/ic_launcher_custom" />
             <meta-data android:name="androidx.wear.tiles.PREVIEW_VERSION" android:value="1" />
         </service>
     </application>
