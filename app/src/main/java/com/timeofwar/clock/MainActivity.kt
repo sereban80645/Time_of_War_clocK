@@ -109,7 +109,7 @@ private fun WatchHome(activity: Activity) {
                 "redblack" -> R.drawable.bg_red_black
                 else -> R.drawable.bg_night
             }
-            Image(painter = painterResource(presetRes), contentDescription = "Вбудований фон", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().alpha(opacity.coerceIn(0f, 1f)))
+            Image(painter = painterResource(presetRes), contentDescription = "Вбудований фон", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         }
         Box(Modifier.fillMaxSize()) {
         // Повноекранний живий попередній перегляд залишається під панеллю налаштувань.
