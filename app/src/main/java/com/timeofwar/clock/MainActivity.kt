@@ -133,7 +133,7 @@ private fun WatchHome(activity: Activity) {
         Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Image(painterResource(R.drawable.ic_launcher_custom), contentDescription = "Іконка Time of War", modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(6.dp))
-            OutlinedMenuText("НАЛАШТУВАННЯ", 12.sp)
+            OutlinedMenuText("НАЛАШТУВАННЯ", 14.sp)
         }
         Spacer(Modifier.height(5.dp))
         LiveWidgetPreview(show2022, show2014, daysOnly, showHours, now, fontSize, strokeWidth, textColor, strokeColor, backgroundPreset, imagePath, bgColor)
@@ -144,15 +144,15 @@ private fun WatchHome(activity: Activity) {
         SettingSwitch("Показувати години", showHours) { showHours = it; prefs.put("showHour", it) }
         SettingSlider("Розмір цифр", fontSize, 12f, 48f) { fontSize = it; prefs.put("fontSize", it) }
         SettingSlider("Товщина контуру", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
-        OutlinedMenuText("Колір тексту RGB", 11.sp)
+        OutlinedMenuText("Колір тексту RGB", 13.sp)
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }
         SettingSlider("G", textG, 0f, 255f) { textG = it; prefs.put("textG", it) }
         SettingSlider("B", textB, 0f, 255f) { textB = it; prefs.put("textB", it) }
-        OutlinedMenuText("Колір контуру RGB", 11.sp)
+        OutlinedMenuText("Колір контуру RGB", 13.sp)
         SettingSlider("R", strokeR, 0f, 255f) { strokeR = it; prefs.put("strokeR", it) }
         SettingSlider("G", strokeG, 0f, 255f) { strokeG = it; prefs.put("strokeG", it) }
         SettingSlider("B", strokeB, 0f, 255f) { strokeB = it; prefs.put("strokeB", it) }
-        OutlinedMenuText("Вбудовані фони", 11.sp)
+        OutlinedMenuText("Вбудовані фони", 13.sp)
         Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Темний", color = Color.White, fontWeight = FontWeight.Bold) }
         Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Прапор України", color = Color.White, fontWeight = FontWeight.Bold) }
         Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Камуфляж", color = Color.White, fontWeight = FontWeight.Bold) }
@@ -206,22 +206,29 @@ private fun LiveWidgetPreview(
 
 @Composable
 private fun OutlinedMenuText(value: String, size: androidx.compose.ui.unit.TextUnit, modifier: Modifier = Modifier) {
-    Text(
-        value,
-        modifier = modifier,
-        fontSize = size,
-        fontWeight = FontWeight.Black,
-        color = Color.Black,
-        style = androidx.compose.ui.text.TextStyle(
-            shadow = Shadow(color = Color.White, offset = Offset(0f, 0f), blurRadius = 2.2f)
-        )
-    )
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        // Draw white copies around the glyphs to create a crisp outline rather than a blurred glow.
+        listOf(
+            -0.9f to -0.9f, 0f to -1.1f, 0.9f to -0.9f,
+            -1.1f to 0f, 1.1f to 0f,
+            -0.9f to 0.9f, 0f to 1.1f, 0.9f to 0.9f
+        ).forEach { (dx, dy) ->
+            Text(
+                value,
+                modifier = Modifier.offset(x = dx.dp, y = dy.dp),
+                fontSize = size,
+                fontWeight = FontWeight.Black,
+                color = Color.White
+            )
+        }
+        Text(value, fontSize = size, fontWeight = FontWeight.Black, color = Color.Black)
+    }
 }
 
 @Composable
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth().heightIn(min = 30.dp), verticalAlignment = Alignment.CenterVertically) {
-        OutlinedMenuText(label, 11.sp, Modifier.weight(1f))
+        OutlinedMenuText(label, 13.sp, Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = onChange, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color.White.copy(alpha = 0.48f), uncheckedThumbColor = Color.LightGray, uncheckedTrackColor = Color.Black.copy(alpha = 0.35f)))
     }
 }
@@ -230,7 +237,7 @@ private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -
 private fun SettingSlider(label: String, value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
     val step = if (label == "Товщина контуру") 0.5f else 1f
     Column(Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
-        OutlinedMenuText("$label: ${"%.1f".format(value)}", 10.sp)
+        OutlinedMenuText("$label: ${"%.1f".format(value)}", 12.sp)
         Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { onChange((value - step).coerceAtLeast(min)) }, modifier = Modifier.sizeIn(minWidth = 38.dp, minHeight = 36.dp), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp), colors = ButtonDefaults.textButtonColors(contentColor = Color.White.copy(alpha = 0.95f))) { Text("−", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
             Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max, modifier = Modifier.weight(1f).height(34.dp), colors = SliderDefaults.colors(thumbColor = Color.White.copy(alpha = 0.94f), activeTrackColor = Color.White.copy(alpha = 0.82f), inactiveTrackColor = Color.White.copy(alpha = 0.35f)))

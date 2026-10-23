@@ -91,10 +91,11 @@ class TimeOfWarTileService : TileService() {
             ))
             if (counter.isNotBlank()) {
                 // Keep the Tile counter on one line, matching the settings preview format.
-                val fitScale = (230f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.58f, 1.15f)
+                // Match the preview's single-line behavior: shrink long counters instead of clipping their tail.
+                val fitScale = (16f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.28f, 1f)
                 column.addContent(outlinedTextElement(
                     counter,
-                    (fontSize * 0.82f * fitScale).coerceIn(10f, 22f),
+                    (fontSize * 0.82f * fitScale).coerceIn(6f, 22f),
                     textColor,
                     strokeColor
                 ))
