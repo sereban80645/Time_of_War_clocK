@@ -115,16 +115,16 @@ private fun WatchHome(activity: Activity) {
         Column(Modifier.fillMaxSize()) {
         // Закріплений попередній перегляд: параметри прокручуються окремо нижче.
         Column(
-            Modifier.fillMaxWidth().weight(0.40f).padding(horizontal = 8.dp, vertical = 2.dp),
+            Modifier.fillMaxWidth().weight(0.52f).padding(horizontal = 6.dp, vertical = 1.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-        Text("TIME OF WAR", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text("TIME OF WAR", fontSize = 10.sp, fontWeight = FontWeight.Bold, maxLines = 1)
         if (show2022) Counter("Повномасштабна війна", counter(Event2022, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         if (show2014) Counter("Війна з 2014 року", counter(Event2014, now, daysOnly, showHours), fontSize, strokeWidth, textColor, strokeColor)
         }
         Column(
-            Modifier.fillMaxWidth().weight(0.60f).background(Color(0xFF151515))
+            Modifier.fillMaxWidth().weight(0.48f).background(Color(0xFF151515))
                 .verticalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 3.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -140,7 +140,7 @@ private fun WatchHome(activity: Activity) {
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }
         SettingSlider("G", textG, 0f, 255f) { textG = it; prefs.put("textG", it) }
         SettingSlider("B", textB, 0f, 255f) { textB = it; prefs.put("textB", it) }
-        Text("Колір обведення RGB", fontSize = 11.sp, color = Color.White)
+        Text("Колір контуру RGB", fontSize = 11.sp, color = Color.White)
         SettingSlider("R", strokeR, 0f, 255f) { strokeR = it; prefs.put("strokeR", it) }
         SettingSlider("G", strokeG, 0f, 255f) { strokeG = it; prefs.put("strokeG", it) }
         SettingSlider("B", strokeB, 0f, 255f) { strokeB = it; prefs.put("strokeB", it) }
@@ -179,11 +179,11 @@ private fun SettingSlider(label: String, value: Float, min: Float, max: Float, o
 
 @Composable
 private fun Counter(title: String, value: String, fontSize: Float, strokeWidth: Float, textColor: Color, strokeColor: Color) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(title, fontSize = 10.sp, color = Color.LightGray)
-        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 1.35f).dp)) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 0.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(title, fontSize = 9.sp, color = Color.LightGray, maxLines = 1)
+        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 0.80f).dp)) {
             val paint = android.text.TextPaint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-                textSize = fontSize * density; typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
+                textSize = minOf(fontSize * density, size.height * 0.70f); typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
                 textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; setStrokeWidth(strokeWidth * density); color = strokeColor.toArgb()
             }
             val maxTextWidth = size.width * 0.96f

@@ -37,6 +37,11 @@ class TimeOfWarTileService : TileService() {
             prefs.getFloat("textG", 255f).toInt().coerceIn(0, 255),
             prefs.getFloat("textB", 255f).toInt().coerceIn(0, 255)
         )
+        val strokeColor = android.graphics.Color.rgb(
+            prefs.getFloat("strokeR", 0f).toInt().coerceIn(0, 255),
+            prefs.getFloat("strokeG", 0f).toInt().coerceIn(0, 255),
+            prefs.getFloat("strokeB", 0f).toInt().coerceIn(0, 255)
+        )
         val bgOpacity = prefs.getFloat("opacity", 0.5f).coerceIn(0f, 1f)
         val bgColor = android.graphics.Color.argb(
             (bgOpacity * 255).toInt(),
@@ -82,7 +87,13 @@ class TimeOfWarTileService : TileService() {
         events.forEach { (title, counter) ->
             column.addContent(textElement(title, 9f, 0xFFFFFFFF.toInt()))
             if (counter.isNotBlank()) {
-                column.addContent(textElement(counter, (fontSize * 0.72f).coerceIn(13f, 22f), textColor))
+                val fitScale = (220f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.58f, 1f)
+                column.addContent(outlinedTextElement(
+                    counter,
+                    (fontSize * 0.72f * fitScale).coerceIn(11f, 22f),
+                    textColor,
+                    strokeColor
+                ))
             }
         }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(2f)).build())
@@ -176,6 +187,43 @@ class TimeOfWarTileService : TileService() {
         source.recycle()
         ResourceBuilders.ImageResource.Builder().setInlineResource(inline).build()
     }.getOrNull()
+
+    private fun outlinedTextElement(
+        value: String,
+        sizeSp: Float,
+        textColor: Int,
+        outlineColor: Int
+    ): LayoutElementBuilders.Box {
+        val box = LayoutElementBuilders.Box.Builder()
+            .setWidth(DimensionBuilders.expand())
+            .setHeight(DimensionBuilders.wrap())
+            .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
+            .setVerticalAlignment(LayoutElementBuilders.VERTICAL_ALIGN_CENTER)
+        val offsets = listOf(
+            -1.1f to -1.1f, 0f to -1.1f, 1.1f to -1.1f,
+            -1.1f to 0f, 1.1f to 0f,
+            -1.1f to 1.1f, 0f to 1.1f, 1.1f to 1.1f
+        )
+        offsets.forEach { (dx, dy) ->
+            val style = LayoutElementBuilders.FontStyle.Builder()
+                .setSize(DimensionBuilders.sp(sizeSp))
+                .setColor(ColorBuilders.argb(outlineColor))
+                .build()
+            val transform = ModifiersBuilders.Transformation.Builder()
+                .setTranslationX(DimensionBuilders.dp(dx))
+                .setTranslationY(DimensionBuilders.dp(dy))
+                .build()
+            box.addContent(
+                LayoutElementBuilders.Text.Builder()
+                    .setText(value)
+                    .setFontStyle(style)
+                    .setModifiers(ModifiersBuilders.Modifiers.Builder().setTransformation(transform).build())
+                    .build()
+            )
+        }
+        box.addContent(textElement(value, sizeSp, textColor))
+        return box.build()
+    }
 
     private fun textElement(value: String, sizeSp: Float, color: Int): LayoutElementBuilders.Text {
         val style = LayoutElementBuilders.FontStyle.Builder()

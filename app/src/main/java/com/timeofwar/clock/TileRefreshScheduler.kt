@@ -5,15 +5,14 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.wear.tiles.TileService
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
- * Low-power, offline scheduling for the next useful Tile refresh.
- * If hours are shown, refresh at the next top of the hour. Otherwise refresh
- * at the local anniversary time of each enabled event (02:40 and/or 12:00).
- * Android may defer inexact alarms while the watch is in deep idle.
+ * Schedules the next Tile refresh. Exact alarms are used when the user/device
+ * allows them; otherwise Android's idle-aware inexact alarm is the safe fallback.
  */
 object TileRefreshScheduler {
     private const val ACTION = "com.timeofwar.clock.ACTION_REFRESH_TILE"
@@ -45,6 +44,15 @@ object TileRefreshScheduler {
             }.minOrNull() ?: return
         }
         val triggerAt = next.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && manager.canScheduleExactAlarms()) {
+            try {
+                manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+                return
+            } catch (_: SecurityException) {
+                // The access can be revoked between the permission check and scheduling.
+            }
+        }
         manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
     }
 }
