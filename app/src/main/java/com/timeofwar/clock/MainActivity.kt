@@ -135,6 +135,9 @@ private fun WatchHome(activity: Activity) {
             Spacer(Modifier.width(6.dp))
             OutlinedMenuText("НАЛАШТУВАННЯ", 12.sp)
         }
+        Spacer(Modifier.height(5.dp))
+        LiveWidgetPreview(show2022, show2014, daysOnly, showHours, now, fontSize, strokeWidth, textColor, strokeColor, backgroundPreset, imagePath, bgColor)
+        Spacer(Modifier.height(8.dp))
         SettingSwitch("Відлік з 24.02.2022", show2022) { show2022 = it; prefs.put("show2022", it) }
         SettingSwitch("Відлік з 20.02.2014", show2014) { show2014 = it; prefs.put("show2014", it) }
         SettingSwitch("Тільки дні", daysOnly) { daysOnly = it; prefs.put("showDaysOnly", it) }
