@@ -116,10 +116,6 @@ class TimeOfWarTileService : TileService() {
                 ))
             }
         }
-        column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
-        val clockText = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
-        column.addContent(textElement(clockText, 12f, 0xFFFFFFFF.toInt()))
-
         val root = LayoutElementBuilders.Box.Builder()
             .setWidth(DimensionBuilders.expand())
             .setHeight(DimensionBuilders.expand())
