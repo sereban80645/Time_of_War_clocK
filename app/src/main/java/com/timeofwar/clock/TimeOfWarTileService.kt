@@ -138,7 +138,7 @@ class TimeOfWarTileService : TileService() {
                             .setResourceId("watch_background")
                             .setWidth(DimensionBuilders.expand())
                             .setHeight(DimensionBuilders.expand())
-                            .setContentScaleMode(LayoutElementBuilders.CONTENT_SCALE_MODE_CROP)
+                            .setContentScaleMode(LayoutElementBuilders.CONTENT_SCALE_MODE_FILL_BOUNDS)
                             .setModifiers(
                                 ModifiersBuilders.Modifiers.Builder()
                                     .setOpacity(TypeBuilders.FloatProp.Builder().setValue(bgOpacity).build())
