@@ -138,24 +138,24 @@ private fun WatchHome(activity: Activity) {
         SettingSwitch("Показувати години", showHours) { showHours = it; prefs.put("showHour", it) }
         SettingSlider("Розмір цифр", fontSize, 12f, 48f) { fontSize = it; prefs.put("fontSize", it) }
         SettingSlider("Товщина контуру", strokeWidth, 0f, 5f) { strokeWidth = it; prefs.put("strokeWidth", it) }
-        Text("Колір тексту RGB", fontSize = 11.sp, color = Color.White)
+        Text("Колір тексту RGB", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
         SettingSlider("R", textR, 0f, 255f) { textR = it; prefs.put("textR", it) }
         SettingSlider("G", textG, 0f, 255f) { textG = it; prefs.put("textG", it) }
         SettingSlider("B", textB, 0f, 255f) { textB = it; prefs.put("textB", it) }
-        Text("Колір контуру RGB", fontSize = 11.sp, color = Color.White)
+        Text("Колір контуру RGB", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
         SettingSlider("R", strokeR, 0f, 255f) { strokeR = it; prefs.put("strokeR", it) }
         SettingSlider("G", strokeG, 0f, 255f) { strokeG = it; prefs.put("strokeG", it) }
         SettingSlider("B", strokeB, 0f, 255f) { strokeB = it; prefs.put("strokeB", it) }
-        Text("Колір фону RGB", fontSize = 11.sp, color = Color.White)
-        SettingSlider("R", bgR, 0f, 255f) { bgR = it; prefs.put("bgR", it) }
-        SettingSlider("G", bgG, 0f, 255f) { bgG = it; prefs.put("bgG", it) }
-        SettingSlider("B", bgB, 0f, 255f) { bgB = it; prefs.put("bgB", it) }
+        Text("Колір фону RGB", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        SettingSlider("R", bgR, 0f, 255f) { bgR = it; backgroundPreset = "color"; prefs.put("bgR", it); prefs.put("backgroundPreset", backgroundPreset) }
+        SettingSlider("G", bgG, 0f, 255f) { bgG = it; backgroundPreset = "color"; prefs.put("bgG", it); prefs.put("backgroundPreset", backgroundPreset) }
+        SettingSlider("B", bgB, 0f, 255f) { bgB = it; backgroundPreset = "color"; prefs.put("bgB", it); prefs.put("backgroundPreset", backgroundPreset) }
         Text("Вбудовані фони", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Темний") }
-        Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Прапор України") }
-        Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Камуфляж") }
-        Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Чорно-червоний") }
-        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Вибрати власне фото") }
+        Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Темний", color = Color.White, fontWeight = FontWeight.Bold) }
+        Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Прапор України", color = Color.White, fontWeight = FontWeight.Bold) }
+        Button(onClick = { backgroundPreset = "camo"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Камуфляж", color = Color.White, fontWeight = FontWeight.Bold) }
+        Button(onClick = { backgroundPreset = "redblack"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Чорно-червоний", color = Color.White, fontWeight = FontWeight.Bold) }
+        Button(onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Вибрати власне фото", color = Color.White, fontWeight = FontWeight.Bold) }
         Spacer(Modifier.height(6.dp))
         }
     }
@@ -164,8 +164,8 @@ private fun WatchHome(activity: Activity) {
 
 @Composable
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().heightIn(min = 32.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.weight(1f), fontSize = 11.sp, color = Color.White)
+    Row(Modifier.fillMaxWidth().heightIn(min = 30.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, modifier = Modifier.weight(1f), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
         Switch(checked = checked, onCheckedChange = onChange, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color.White.copy(alpha = 0.48f), uncheckedThumbColor = Color.LightGray, uncheckedTrackColor = Color.Black.copy(alpha = 0.35f)))
     }
 }
@@ -173,8 +173,8 @@ private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -
 @Composable
 private fun SettingSlider(label: String, value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
     val step = if (label == "Товщина контуру") 0.5f else 1f
-    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
-        Text("$label: ${"%.1f".format(value)}", fontSize = 10.sp, color = Color.White.copy(alpha = 0.92f))
+    Column(Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
+        Text("$label: ${"%.1f".format(value)}", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.98f))
         Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { onChange((value - step).coerceAtLeast(min)) }, modifier = Modifier.sizeIn(minWidth = 38.dp, minHeight = 36.dp), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp), colors = ButtonDefaults.textButtonColors(contentColor = Color.White.copy(alpha = 0.95f))) { Text("−", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
             Slider(value = value.coerceIn(min, max), onValueChange = onChange, valueRange = min..max, modifier = Modifier.weight(1f).height(34.dp), colors = SliderDefaults.colors(thumbColor = Color.White.copy(alpha = 0.94f), activeTrackColor = Color.White.copy(alpha = 0.82f), inactiveTrackColor = Color.White.copy(alpha = 0.35f)))
@@ -190,7 +190,7 @@ private fun Counter(title: String, value: String, fontSize: Float, strokeWidth: 
         androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height((fontSize * 0.80f).dp)) {
             val paint = android.text.TextPaint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
                 textSize = minOf(fontSize * density, size.height * 0.70f); typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
-                textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; setStrokeWidth(strokeWidth * density); color = strokeColor.toArgb()
+                textAlign = android.graphics.Paint.Align.CENTER; style = android.graphics.Paint.Style.STROKE; setStrokeWidth(strokeWidth * density * 1.8f); strokeJoin = android.graphics.Paint.Join.ROUND; color = strokeColor.toArgb()
             }
             val maxTextWidth = size.width * 0.96f
             val measuredWidth = paint.measureText(value)

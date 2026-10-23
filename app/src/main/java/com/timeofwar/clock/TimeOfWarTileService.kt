@@ -90,18 +90,14 @@ class TimeOfWarTileService : TileService() {
                 8f, 0xFFFFFFFF.toInt()
             ))
             if (counter.isNotBlank()) {
-                // Split long counters into two readable rows so days/hours are not clipped on the Tile.
-                val splitAt = counter.indexOf(" д. ")
-                val rows = if (splitAt >= 0) listOf(counter.substring(0, splitAt + 3), counter.substring(splitAt + 4)) else listOf(counter)
-                rows.forEach { rowText ->
-                    val fitScale = (170f / rowText.length.coerceAtLeast(1).toFloat()).coerceIn(0.52f, 0.95f)
-                    column.addContent(outlinedTextElement(
-                        rowText,
-                        (fontSize * 0.60f * fitScale).coerceIn(9f, 15f),
-                        textColor,
-                        strokeColor
-                    ))
-                }
+                // Keep the Tile counter on one line, matching the settings preview format.
+                val fitScale = (170f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.38f, 0.95f)
+                column.addContent(outlinedTextElement(
+                    counter,
+                    (fontSize * 0.60f * fitScale).coerceIn(7f, 15f),
+                    textColor,
+                    strokeColor
+                ))
             }
         }
         column.addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
@@ -208,9 +204,9 @@ class TimeOfWarTileService : TileService() {
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
             .setVerticalAlignment(LayoutElementBuilders.VERTICAL_ALIGN_CENTER)
         val offsets = listOf(
-            -1.1f to -1.1f, 0f to -1.1f, 1.1f to -1.1f,
-            -1.1f to 0f, 1.1f to 0f,
-            -1.1f to 1.1f, 0f to 1.1f, 1.1f to 1.1f
+            -1.5f to -1.5f, 0f to -1.5f, 1.5f to -1.5f,
+            -1.5f to 0f, 1.5f to 0f,
+            -1.5f to 1.5f, 0f to 1.5f, 1.5f to 1.5f
         )
         offsets.forEach { (dx, dy) ->
             val style = LayoutElementBuilders.FontStyle.Builder()

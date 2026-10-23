@@ -17,7 +17,7 @@ object CounterFormatter {
 
         if (daysOnly) {
             val days = calendarDays + if (now.toLocalTime().isBefore(start.toLocalTime())) 0 else 1
-            return if (showHours) "$days д. $hours год." else "$days д."
+            return if (showHours) "${days}д.${hours}г." else "${days}д."
         }
 
         var period = Period.between(start.toLocalDate(), now.toLocalDate())
@@ -25,7 +25,7 @@ object CounterFormatter {
             period = period.minusDays(1)
             hours = (hours + 24) % 24
         }
-        val base = "${period.years} р. ${period.months} міс. ${period.days} д."
-        return if (showHours) "$base $hours год." else base
+        val base = "${period.years}р.${period.months}міс.${period.days}д."
+        return if (showHours) "${base}${hours}г." else base
     }
 }
