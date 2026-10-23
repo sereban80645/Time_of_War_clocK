@@ -81,6 +81,7 @@ class TimeOfWarTileService : TileService() {
         val resourceVersion = "prefs-${prefs.all.hashCode()}-${customFile.lastModified()}-${customFile.length()}"
 
         val column = LayoutElementBuilders.Column.Builder()
+            .setWidth(DimensionBuilders.expand())
             .setHorizontalAlignment(LayoutElementBuilders.HORIZONTAL_ALIGN_CENTER)
             .addContent(textElement("TIME OF WAR", 9f, 0xFFBDBDBD.toInt()))
             .addContent(LayoutElementBuilders.Spacer.Builder().setHeight(DimensionBuilders.dp(1f)).build())
@@ -90,12 +91,16 @@ class TimeOfWarTileService : TileService() {
                 8f, 0xFFFFFFFF.toInt()
             ))
             if (counter.isNotBlank()) {
-                // Keep the Tile counter on one line, matching the settings preview format.
-                // Match the preview's single-line behavior: shrink long counters instead of clipping their tail.
-                val fitScale = (16f / counter.length.coerceAtLeast(1).toFloat()).coerceIn(0.28f, 1f)
+                // Give the counter the whole tile width and calculate font size from a width budget,
+                // instead of using a fixed character-count scale that can still clip on larger font settings.
+                val availableWidthDp = 184f
+                val estimatedGlyphWidthEm = 0.62f
+                val widthFitSp = availableWidthDp /
+                    (counter.length.coerceAtLeast(1).toFloat() * estimatedGlyphWidthEm)
+                val fittedFontSize = minOf(fontSize * 0.82f, widthFitSp).coerceIn(6f, 22f)
                 column.addContent(outlinedTextElement(
                     counter,
-                    (fontSize * 0.82f * fitScale).coerceIn(6f, 22f),
+                    fittedFontSize,
                     textColor,
                     strokeColor
                 ))
