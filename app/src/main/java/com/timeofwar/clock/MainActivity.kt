@@ -152,10 +152,6 @@ private fun WatchHome(activity: Activity) {
         SettingSlider("R", strokeR, 0f, 255f) { strokeR = it; prefs.put("strokeR", it) }
         SettingSlider("G", strokeG, 0f, 255f) { strokeG = it; prefs.put("strokeG", it) }
         SettingSlider("B", strokeB, 0f, 255f) { strokeB = it; prefs.put("strokeB", it) }
-        OutlinedMenuText("Колір фону RGB", 11.sp)
-        SettingSlider("R", bgR, 0f, 255f) { bgR = it; backgroundPreset = "color"; prefs.put("bgR", it); prefs.put("backgroundPreset", backgroundPreset) }
-        SettingSlider("G", bgG, 0f, 255f) { bgG = it; backgroundPreset = "color"; prefs.put("bgG", it); prefs.put("backgroundPreset", backgroundPreset) }
-        SettingSlider("B", bgB, 0f, 255f) { bgB = it; backgroundPreset = "color"; prefs.put("bgB", it); prefs.put("backgroundPreset", backgroundPreset) }
         OutlinedMenuText("Вбудовані фони", 11.sp)
         Button(onClick = { backgroundPreset = "night"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Темний", color = Color.White, fontWeight = FontWeight.Bold) }
         Button(onClick = { backgroundPreset = "ukraine"; prefs.put("backgroundPreset", backgroundPreset) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0x99333333))) { Text("Прапор України", color = Color.White, fontWeight = FontWeight.Bold) }
